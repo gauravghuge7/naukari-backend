@@ -13,6 +13,11 @@ const testSchema = new Schema({
       required: true,
    },
 
+   testDescription: {
+      type: String,
+   },
+   
+
    testDate: {
       type: Date,
       required: true,

@@ -1,3 +1,4 @@
+import { uploadOnCloudinary } from "../../helper/cloudinary.js";
 import { Student } from "../../models/Student/student.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
@@ -36,6 +37,7 @@ const fetchProfile = asyncHandler(async (req, res, next) => {
    }
 })
 
+
 const updateProfile = asyncHandler(async (req, res, next) => {
    try {
 
@@ -52,16 +54,49 @@ const updateProfile = asyncHandler(async (req, res, next) => {
          throw new ApiError(400, "Student Not Found");
       }
 
-      const { studentName, studentEmail, studentPhone, studentBio, studentProfilePicture } = req.body;
+      const { studentName, studentEmail, studentPhone, studentBio } = req.body;
 
-      if(!studentName || !studentEmail || !studentPhone) {
-         throw new ApiError(400, "Please provide all the required fields");
+      
+      console.log("req.file => ", req.file);
+      console.log("req.files => ", req.files);
+
+
+
+      let profilePicture = null;
+
+
+      if(req.file) {
+         
+         const result = await uploadOnCloudinary(req.file.path);
+
+         if(!result) {
+            throw new ApiError(400, "Profile Picture Upload Failed");
+         }
+
+         profilePicture = result?.secure_url;
+
+
       }
 
-      student.studentName = studentName;
-      student.studentEmail = studentEmail;
-      student.studentPhone = studentPhone;
-      student.studentBio = studentBio;
+
+
+      /** update the student profile */
+
+      const update = await Student.findByIdAndUpdate(
+         _id, 
+         {
+            $set: {
+               ...(studentName && { studentName }),
+               ...(studentEmail && { studentEmail }),
+               ...(studentPhone && { studentPhone }),
+               ...(studentBio && { studentBio }),
+               ...(profilePicture && { studentProfilePicture: profilePicture }),
+            },
+         },
+         {
+            new: true,
+         }
+      );
 
 
       await student.save({ validateBeforeSave: false });
@@ -69,7 +104,7 @@ const updateProfile = asyncHandler(async (req, res, next) => {
       return res 
       .status(200)
       .json(
-         new ApiResponse(200, "Student Profile Updated Successfully", student)
+         new ApiResponse(200, "Student Profile Updated Successfully", update)
       );
 
    } 

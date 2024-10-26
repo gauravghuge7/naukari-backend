@@ -1,163 +1,103 @@
+import {ApiError} from "../../utils/ApiError.js";
+import {ApiResponse} from "../../utils/ApiResponse.js";
+import {asyncHandler} from "../../utils/asyncHandler.js";
+import {Admin} from "../../models/Admin/admin.model.js";
+import { Question } from "../../models/Test/questions.model.js";
+import { Test } from "../../models/Test/test.model.js";
 
-import { Admin } from './../../models/admin.model.js';
-import { Test } from './../../models/test.model.js';
-import {ApiResponse} from '../../utils/ApiResponse.js';
-import { ApiError } from '../../utils/ApiError.js';
-import { asyncHandler } from '../../utils/asyncHandler.js';
+
+const fetchTest = asyncHandler(async (req, res, next) => {
+   try {
+      const {_id} = req.user;
+      if (!_id) {
+         throw new ApiError(400, "Please provide all the required fields");
+      }
+      const admin = await Admin.findById(_id);
+      if (!admin) {
+         throw new ApiError(400, "Admin Not Found");
+      }
+      return res
+         .status(200)
+         .json(new ApiResponse(200, "Admin Test Fetched Successfully", admin));
+   } catch (error) {
+      console.log(error.message);
+      throw new ApiError(400, error.message, error);
+   }
+});
 
 
 const createTest = asyncHandler(async (req, res, next) => {
 
-
-   
    try {
+      
+      const admin = await Admin.findById(req?.user?._id);
 
-      const { testName, testId, topics } = req.body;
-
-      if(!testName || !testId || !topics) {
-         throw new ApiError(400, "Please provide all the required fields");
-      }
-
-      const admin = await Admin.findById(req.user._id);
-
-      if(!admin) {
+      if (!admin) {
          throw new ApiError(400, "Admin Not Found");
       }
 
-      const existingTest = await Test.findOne({ testId });
+      // NOTE: receive the questions in the body 
 
-      if(existingTest) {
-         throw new ApiError(400, "Test Already Exists");
+      const {testName, testTime, testDescription, topics} = req.body;
+
+      if(!testName || !testTime || !testDescription || !topics) {
+         throw new ApiError(400, "Please provide all the required fields");
       }
 
-      // for extra security give trim fields for all entries 
-      const test = await Test.create({
-         testName: testName.trim(),
-         testId: testId.trim(),
-         topics: topics.trim(),
-         students: [],
-         questions: []
-      });
+      const createTest = await Test.create({
+         testName,
+         testTime,
+         testDescription,
+         questions,  
+      })
 
-      return res 
-      .status(201)
-      .json(
-         new ApiResponse(201, "Test Created Successfully", test)
-      )
-
+      return res
+         .status(200)
+         .json(new ApiResponse(200, "Admin Test Created Successfully", createTest));
    } 
-
    catch (error) {
-      console.log("Error => ",error.message);
+      console.log(error.message);
       throw new ApiError(400, error.message, error);
    }
-})
+});
 
-
-const createAQuestion = asyncHandler(async (req, res, next) => {
-
-   
+const addQuestionsInTest = asyncHandler(async (req, res, next) => {
    try {
+      const admin = await Admin.findById(req?.user?._id);
 
-      const { question, answer, correctAnswer, testId } = req.body;
-
-      if(!question || !answer || !correctAnswer || !testId) {
-         throw new ApiError(400, "Please provide all the required fields");
-      }
-
-      const admin = await Admin.findById(req.user._id);
-
-      if(!admin) {
+      if (!admin) {
          throw new ApiError(400, "Admin Not Found");
       }
 
-      const existingTest = await Test.findOne({ testId });
+      // NOTE: receive the questions in the body 
 
-      if(!existingTest) {
-         throw new ApiError(400, "Test Not Found");
+      const {testId, question} = req.body;
+
+      if(!testId || !question) {
+         throw new ApiError(400, "Please provide all the required fields");
       }
 
-      const existingQuestion = await Test.findOne({ question });
-
-      if(existingQuestion) {
-         throw new ApiError(400, "Question Already Exists");
-      }
-
-      // for extra security give trim fields for all entries 
       const createQuestion = await Question.create({
-         question: question.trim(),
-         answer: answer.trim(),
-         correctAnswer: correctAnswer.trim(),
-         test: existingTest._id
-      });
+         test: testId,
+         question,
+      })
 
-      return res 
-      .status(201)
-      .json(
-         new ApiResponse(201, "Question Created Successfully", createQuestion)
-      )
+
+      return res
+         .status(200)
+         .json(new ApiResponse(200, "Admin Test Created Successfully", createQuestion));
 
    } 
    catch (error) {
-      console.log("Error => ",error.message);
+      console.log(error.message);
       throw new ApiError(400, error.message, error);
    }
-
-})
-
-
-
-const addQuestionsToTest = asyncHandler(async (req, res, next) => {
-   
-   try {
-
-      const { testId, questions } = req.body;
-
-      if(!testId || !questions) {
-         throw new ApiError(400, "Please provide all the required fields");
-      }
-
-      const admin = await Admin.findById(req.user._id);
-
-      if(!admin) {
-         throw new ApiError(400, "Admin Not Found");
-      }
-
-      const existingTest = await Test.findOne({ testId });
-
-      if(!existingTest) {
-         throw new ApiError(400, "Test Not Found");
-      }
-
-      
-      // save the questions to the tests
-      existingTest.questions.push(questions);
-
-      // save the test after inserting the questions
-      await existingTest.save({ validateBeforeSave: false });
-
-      
-
-      
-
-      return res 
-      .status(201)
-      .json(
-         new ApiResponse(201, "Questions Added Successfully", addQuestions)
-      )  
-      
-      
-   } 
-   catch (error) {
-      console.log("Error => ",error.message);
-      throw new ApiError(400, error.message, error);
-   }
-
-})
-
-
+});
 
 
 export {
-   createTest
-}
+   fetchTest,
+   createTest,
+   addQuestionsInTest
+
+};

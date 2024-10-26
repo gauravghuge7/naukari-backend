@@ -20,6 +20,10 @@ const adminSchema = new Schema({
       required: true
    },
 
+   adminBio: {
+      type: String,
+   },
+
    adminPasswordToken: {
       type: String,
    },
@@ -27,6 +31,9 @@ const adminSchema = new Schema({
    adminAddress: {
       type: String,
 
+   },
+   adminProfilePicture: {
+      type: String,
    },
 
    adminRefreshToken: {
