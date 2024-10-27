@@ -10,7 +10,6 @@ const testSchema = new Schema({
 
    testId: {
       type: String,
-      required: true,
    },
 
    testDescription: {
@@ -20,7 +19,6 @@ const testSchema = new Schema({
 
    testDate: {
       type: Date,
-      required: true,
       default: Date.now
    },
 
@@ -31,7 +29,11 @@ const testSchema = new Schema({
 
    topics: {
       type: String,
-      required: true,
+
+   },
+
+   numberOfQuestions: {
+      type: Number,
    },
 
    students: [{

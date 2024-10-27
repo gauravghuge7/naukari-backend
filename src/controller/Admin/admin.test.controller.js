@@ -30,6 +30,7 @@ const createTest = asyncHandler(async (req, res, next) => {
 
    try {
       
+      console.log("excution start ");
       const admin = await Admin.findById(req?.user?._id);
 
       if (!admin) {
@@ -38,9 +39,9 @@ const createTest = asyncHandler(async (req, res, next) => {
 
       // NOTE: receive the questions in the body 
 
-      const {testName, testTime, testDescription, topics} = req.body;
+      const {testName, testTime, testDescription, numberOfQuestions} = req.body;
 
-      if(!testName || !testTime || !testDescription || !topics) {
+      if(!testName || !testTime || !testDescription || !numberOfQuestions) {
          throw new ApiError(400, "Please provide all the required fields");
       }
 
@@ -48,7 +49,7 @@ const createTest = asyncHandler(async (req, res, next) => {
          testName,
          testTime,
          testDescription,
-         questions,  
+         numberOfQuestions,  
       })
 
       return res
@@ -56,7 +57,7 @@ const createTest = asyncHandler(async (req, res, next) => {
          .json(new ApiResponse(200, "Admin Test Created Successfully", createTest));
    } 
    catch (error) {
-      console.log(error.message);
+      console.log(error);
       throw new ApiError(400, error.message, error);
    }
 });
