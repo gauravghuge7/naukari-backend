@@ -124,13 +124,12 @@ const registerStudent = asyncHandler(async (req, res, next) => {
          throw new ApiError(400, "Otp Not Found");
       }
 
-      if(findOtp.studentOtp !== req.body.otp) {
+      if(findOtp.studentOtp !== otp) {
          throw new ApiError(400, "Invalid OTP Entered by you ");
       }
 
-      findOtp.studentOtpVerified = true;
 
-      await StudentOtp.findByIdAndDelete(findOtp._id);
+      await StudentOtp.deleteMany({ studentEmail: findOtp.studentEmail }).exec();
 
       await StudentOtp.deleteMany({ studentEmail: findOtp.studentEmail });
 
