@@ -112,7 +112,7 @@ const registerStudent = asyncHandler(async (req, res, next) => {
 
       const { otp, studentEmail} = req.body;
 
-      if(!otp) {
+      if(!otp || !studentEmail) {
          throw new ApiError(400, "OTP is required");
       }
 
@@ -124,7 +124,7 @@ const registerStudent = asyncHandler(async (req, res, next) => {
          throw new ApiError(400, "Otp Not Found");
       }
 
-      if(findOtp.studentOtp !== otp) {
+      if(findOtp.studentOtp !== req.body.otp) {
          throw new ApiError(400, "Invalid OTP Entered by you ");
       }
 
