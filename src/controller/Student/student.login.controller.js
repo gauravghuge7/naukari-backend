@@ -129,9 +129,9 @@ const registerStudent = asyncHandler(async (req, res, next) => {
       }
 
 
-      await StudentOtp.deleteMany({ studentEmail: findOtp.studentEmail }).exec();
-
       await StudentOtp.deleteMany({ studentEmail: findOtp.studentEmail });
+
+      await StudentOtp.findOneAndDelete({ studentEmail: findOtp.studentEmail });
 
 
 

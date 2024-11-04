@@ -10,7 +10,7 @@ const studentOtpSchema = new Schema(
       },
 
       studentOtp: {
-         type: Number,
+         type: String,
          required: true,
       },
 
