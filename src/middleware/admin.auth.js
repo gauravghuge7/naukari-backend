@@ -1,8 +1,9 @@
 import { ApiError } from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 
-const isAdminLogin = async (req, res, next) => {
+const isAdminLogin = asyncHandler(async (req, res, next) => {
    try {
       
       const adminAccessToken = req.cookies.adminAccessToken;
@@ -22,7 +23,7 @@ const isAdminLogin = async (req, res, next) => {
    catch (error) {
       throw new ApiError(505, error?.message);   
    }
-}
+})
 
 export {
    isAdminLogin   

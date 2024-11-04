@@ -1,7 +1,8 @@
 import { ApiError } from "../utils/ApiError.js"
 import jwt from "jsonwebtoken"
+import { asyncHandler } from "../utils/asyncHandler.js"
 
-const isStudentLogin = async(req, res, next) => {
+const isStudentLogin = asyncHandler(async(req, res, next) => {
 
    try {
       
@@ -24,7 +25,7 @@ const isStudentLogin = async(req, res, next) => {
    catch (error) {
       throw new ApiError(401, error.message)
    }
-}
+})
 
 export {
    isStudentLogin
