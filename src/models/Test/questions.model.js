@@ -14,17 +14,17 @@ const questionSchema = new Schema({
    
    answer: {
       type: String,
-      required: true,
+
    },
 
    options: [{
       type: String,
-      required: true,
+
    }],
 
    correctAnswer: {
       type: Boolean,
-      required: true,
+
    }
 
 }, {timestamps: true});

@@ -15,6 +15,11 @@ const testSchema = new Schema({
    testDescription: {
       type: String,
    },
+
+   marks: {
+      type: Number,
+      required: true,
+   },
    
 
    testDate: {
@@ -44,7 +49,12 @@ const testSchema = new Schema({
    questions: [{
       type: Schema.Types.ObjectId,
       ref: 'Question'
-   }]
+   }],
+
+   isCompleted: {
+      type: Boolean,
+      default: false
+   }
 
 }, {timestamps: true});
 
