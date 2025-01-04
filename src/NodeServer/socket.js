@@ -9,8 +9,8 @@ const server = http.createServer(app);
 
 // CORS options
 const corsOptions = {
-   origin: '*', // Allow all origins for demonstration; adjust as needed for security
-   methods:"*", // Allow these methods
+   origin: "http://localhost:5173", 
+   methods:"*", 
    allowedHeaders: "*", // Specify any custom headers
    credentials: true // Allow credentials (if needed)
 };
@@ -20,23 +20,27 @@ const io = new Server(server, {
    cors: corsOptions,
 });
 
-// Listen for incoming connections
+
+
 io.on('connection', (socket) => {
+
    console.log('A user connected:', socket.id);
+
+   console.log("Sockets ", socket)
 
    // Listen for chat messages
    socket.on('chat message', (msg) => {
       console.log('Message received: ' + msg);
-      // Broadcast the message to all connected clients
-      io.emit('chat message', msg);
+
+      io.emit('chat message', msg );
+
    });
 
-   
-   // Handle disconnection
    socket.on('disconnect', () => {
       console.log('User disconnected:', socket.id);
    });
 });
+
 
 // Preflight CORS handling for Express
 app.options('*', cors(corsOptions)); // Enable pre-flight across the board
